@@ -1,0 +1,9 @@
+{
+  "Id": 1,
+  "Name": "BlueServer",
+  "Host": "192.168.11.215",
+  "Port": 15001,
+  "LoginServerHost": "192.168.11.215",
+  "LoginServerHeartbeatPort": 14004,
+  "HeartbeatIntervalSeconds": 5
+}
