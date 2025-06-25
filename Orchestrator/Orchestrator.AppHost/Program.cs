@@ -1,5 +1,11 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
+// Add Distributed redis cache to the container.
+var redis = builder.AddRedis(name: "engineRedis", port: 6379)
+    .WithRedisInsight()
+    .WithDataVolume("engine-redis-data")
+    .WithLifetime(ContainerLifetime.Session);
+
 // A database host
 var sqlServer = builder
     .AddSqlServer(name: "engineSqlServer", port: 62949)
@@ -21,6 +27,8 @@ var migrationsRunner = builder.AddProject<Projects.SqlMigrationRunner>("SqlMigra
 // Add base services to the container.
 builder.AddProject<Projects.LoginServer>("LoginServer")
     .WithReference(loginServerDatabase, connectionName: "LoginServer")
+    .WithReference(redis, connectionName: "LoginServerRedis")
+    .WaitFor(redis)
     .WaitForCompletion(migrationsRunner);
 
 builder.AddProject<Projects.WorldServer>("WorldServer")
@@ -32,11 +40,8 @@ builder.AddProject<Projects.WorldServer>("WorldServer")
 // Public web application server to provide a web interface for users to view and manage their accounts and view game server information.
 builder.AddProject<Projects.WebAppServer>("PublicWebAppServer")
     .WaitForCompletion(migrationsRunner)
+    .WithReference(redis, connectionName: "LoginServerRedis")
     .WithReference(loginServerDatabase)
     .WithReference(worldServerDatabase);
-
-
-
-
 
 builder.Build().Run();

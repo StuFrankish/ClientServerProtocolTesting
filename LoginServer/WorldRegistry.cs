@@ -1,4 +1,6 @@
-﻿using Shared;
+﻿using Microsoft.Extensions.Configuration;
+using Shared;
+using Shared.Caching;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
 using System.Text;
@@ -7,14 +9,11 @@ using static Shared.Enums;
 
 namespace LoginServer;
 
-public class WorldRegistry
+public class WorldRegistry(IConfiguration configuration)
 {
-    // Tracks registered worlds and last heartbeat timestamps
-    private readonly ConcurrentDictionary<byte, (WorldInfo Info, DateTime LastHeartbeat)> _worlds =
-        new();
-
-    // If no heartbeat within this period, mark as offline
+    private readonly ConcurrentDictionary<byte, (WorldInfo Info, DateTime LastHeartbeat)> _worlds = new();
     private readonly TimeSpan _timeout = TimeSpan.FromSeconds(60);
+    private readonly RedisWorldInfoCache _cache = new(connectionString: configuration.GetConnectionString("LoginServerRedis")!);
 
     public void StartHeartbeatListener(int port, CancellationToken ct)
     {
@@ -62,6 +61,9 @@ public class WorldRegistry
                             info.State = WorldState.Offline;
                             _worlds[key] = (info, entry.LastHeartbeat);
                         }
+
+                        // Update the cache with the latest info
+                        await _cache.AddOrUpdateAsync(entry.Info).ConfigureAwait(false);
                     }
                 }
             }
@@ -76,6 +78,10 @@ public class WorldRegistry
             id =>
             {
                 Console.WriteLine($"[Registry] World {info.Id} '{info.Name}' registered with state {info.State}");
+
+                // Update the cache with the new world info
+                _cache.AddOrUpdateAsync(info).ConfigureAwait(false);
+
                 return (info, DateTime.UtcNow);
             },
             // Key exists - update only if state changed or if it's a heartbeat refresh
@@ -89,6 +95,9 @@ public class WorldRegistry
                 {
                     return (existing.Info, timestamp);
                 }
+
+                // Update the cache with the new world info
+                _cache.AddOrUpdateAsync(info).ConfigureAwait(false);
 
                 // State changed - update info and timestamp
                 Console.WriteLine($"[Registry] World {info.Id} '{info.Name}' state changed from {existing.Info.State} to {info.State}");

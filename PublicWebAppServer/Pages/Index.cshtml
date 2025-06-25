@@ -1,4 +1,7 @@
 ﻿@page
+
+@using global::Shared
+
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
@@ -20,6 +23,23 @@
 {
     <div>
         <h2>@realm.Name</h2>
-        <p>@realm.State</p>
+
+        @if (realm.State == Enums.WorldState.Closed)
+        {
+            <i class="fas fa-ban text-danger"></i>
+        }
+
+        @if (realm.State == Enums.WorldState.Available)
+        {
+            <i class="fas fa-check-circle text-success"></i>
+        }
+
+        @if (realm.State == Enums.WorldState.Offline)
+        {
+            <i class="fas fa-power-off text-secondary"></i>
+        }
+
+        @realm.State
+
     </div>
 }
