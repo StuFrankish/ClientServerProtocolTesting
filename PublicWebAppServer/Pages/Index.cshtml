@@ -1,0 +1,25 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="p-5 mb-4 bg-body-tertiary rounded-4 background">
+    <div class="container-fluid py-3">
+        <h1 class="display-5 fw-bold">Demonstration Site</h1>
+        <p class="col-md-8 fs-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Maecenas mattis. Nulla facilisi.</p>
+        <button class="btn btn-primary btn-lg" type="button">Hero button</button>
+    </div>
+</div>
+
+<h6 class="border-bottom border-secondary">
+    Realm List
+</h6>
+
+@foreach (var realm in Model.Realms)
+{
+    <div>
+        <h2>@realm.Name</h2>
+        <p>@realm.State</p>
+    </div>
+}

@@ -1,7 +1,7 @@
-﻿using Shared;
+﻿using CliClient;
+using Shared;
 using Spectre.Console;
 using System.Net.Sockets;
-using TestClient;
 using static Shared.Enums;
 
 class Program

@@ -1,0 +1,13 @@
+body {
+    font-family: "Roboto", sans-serif;
+}
+
+a.navbar-brand > img {
+    max-width: 32px;
+}
+
+div.background {
+    background-image: url('/assets/background.png');
+    background-size: cover;
+    background-position: right;
+}

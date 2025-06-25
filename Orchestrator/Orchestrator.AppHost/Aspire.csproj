@@ -13,11 +13,14 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" Version="9.3.1" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="9.3.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\LoginServer\LoginServer.csproj" />
-    <ProjectReference Include="..\..\TestClient\TestClient.csproj" />
+    <ProjectReference Include="..\..\PublicWebAppServer\WebAppServer.csproj" />
+    <ProjectReference Include="..\..\SqlMigration\SqlMigrationRunner.csproj" />
+    <ProjectReference Include="..\..\TestClient\CLI.csproj" />
     <ProjectReference Include="..\..\WorldServer\WorldServer.csproj" />
   </ItemGroup>
 

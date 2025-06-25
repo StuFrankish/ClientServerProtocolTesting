@@ -1,5 +1,6 @@
-﻿using Shared;
-using System.Collections.Concurrent;
+﻿using Microsoft.EntityFrameworkCore;
+using Shared;
+using Shared.Persistence;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -7,17 +8,16 @@ using static Shared.Enums;
 
 namespace LoginServer;
 
-public class LoginService(IPAddress ip, int port, WorldRegistry registry)
+public class LoginService(WorldRegistry registry, LoginDbContext dbContext)
 {
-    private readonly TcpListener _listener = new(ip, port);
+    private readonly TcpListener _listener = new(GetLocalIPAddress(), 14002);
     private readonly WorldRegistry _registry = registry;
+    private readonly LoginDbContext _loginDbContext = dbContext;
 
-    // In-memory user store
-    private readonly ConcurrentDictionary<string, string> _users = new(
-        [
-            new KeyValuePair<string, string>("alice", "alice"),
-            new KeyValuePair<string, string>("bob", "bob")
-        ]);
+    private static IPAddress GetLocalIPAddress()
+    {
+        return IPAddress.Parse("192.168.11.215");
+    }
 
     public async Task StartAsync(CancellationToken ct)
     {
@@ -44,12 +44,14 @@ public class LoginService(IPAddress ip, int port, WorldRegistry registry)
             var user = creds.Length > 0 ? creds[0] : string.Empty;
             var pass = creds.Length > 1 ? creds[1] : string.Empty;
 
-            var ok = _users.TryGetValue(user, out var realPass) && pass == realPass;
-            var text = ok ? "OK" : "FAIL";
+            var internalUser = await _loginDbContext.Users.FirstOrDefaultAsync(u => u.Username == user && u.Password == pass, ct);
+            var text = internalUser != null ? $"OK" : "FAIL";
+
+            Console.WriteLine($"[Login] User `{user}` {(internalUser != null ? "authenticated" : "failed")}");
 
             var resp = new Packet(Opcode.LoginResponse, Encoding.UTF8.GetBytes(text));
             await sess.Stream.WriteAsync(resp.ToBytes(), ct);
-            if (!ok) return;
+            if (internalUser is null) return;
 
             // 2) Send realm list upon request
             var listReq = await Packet.FromStream(sess.Stream, ct);

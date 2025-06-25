@@ -1,13 +1,30 @@
-﻿using Shared;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Shared;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using static Shared.Enums;
 
-namespace CliClient;
+namespace PublicWebAppServer.Pages;
 
-public static class ClientService
+public class IndexModel(ILogger<IndexModel> logger) : PageModel
 {
+    public IList<WorldInfo> Realms { get; set; } = [];
+
+    public async Task OnGetAsync(CancellationToken cancellationToken)
+    {
+        TcpClient loginServerClient = default!;
+        NetworkStream loginServerStream = default!;
+
+        loginServerClient = new TcpClient();
+        await loginServerClient.ConnectAsync(IPAddress.Parse("192.168.11.215"), 14002, cancellationToken);
+        loginServerStream = loginServerClient.GetStream();
+
+        await LoginAsync(loginServerStream, "alice", "alice", cancellationToken);
+
+        Realms = await RequestRealmListAsync(loginServerStream, cancellationToken);
+    }
+
     public static async Task<bool> LoginAsync(NetworkStream stream, string username, string password, CancellationToken ct)
     {
         var creds = Encoding.UTF8.GetBytes($"{username}:{password}");
@@ -59,48 +76,5 @@ public static class ClientService
         }
 
         return [.. worlds];
-    }
-
-    public static async Task<TcpClient> ConnectWorldAsync(WorldInfo world, CancellationToken ct)
-    {
-        var tcp = new TcpClient();
-        await tcp.ConnectAsync(world.IP.ToString(), world.Port, ct);
-        var stream = tcp.GetStream();
-
-        var hs = new Packet(Opcode.WorldHandshake);
-        await stream.WriteAsync(hs.ToBytes(), ct);
-
-        var resp = await Packet.FromStream(stream, ct);
-        if (resp.Op == Opcode.WorldWelcome)
-            Console.WriteLine(Encoding.UTF8.GetString(resp.Payload));
-
-        return tcp;
-    }
-
-    public static async Task DisconnectWorldAsync(TcpClient tcpClient, CancellationToken ct)
-    {
-        var stream = tcpClient.GetStream();
-        var discPkt = new Packet(Opcode.Disconnect);
-        await stream.WriteAsync(discPkt.ToBytes(), ct);
-        await Task.Delay(100, ct);
-        tcpClient.Client.Shutdown(SocketShutdown.Both);
-        tcpClient.Close();
-    }
-
-    public static async Task<bool> PingAsync(TcpClient tcpClient, CancellationToken ct)
-    {
-        var stream = tcpClient.GetStream();
-        var pingPkt = new Packet(Opcode.Ping);
-        await stream.WriteAsync(pingPkt.ToBytes(), ct);
-
-        var resp = await Packet.FromStream(stream, ct);
-        return resp.Op == Opcode.Pong;
-    }
-
-    public static async Task SetWorldStateAsync(TcpClient tcpClient, WorldState newState, CancellationToken ct)
-    {
-        var stream = tcpClient.GetStream();
-        var setStatePkt = new Packet(Opcode.SetState, [(byte)newState]);
-        await stream.WriteAsync(setStatePkt.ToBytes(), ct);
     }
 }

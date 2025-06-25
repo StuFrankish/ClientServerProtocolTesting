@@ -15,10 +15,11 @@ public class Enums
         WorldWelcome = 0x11,
         Disconnect = 0x12,
 
-        // World Operations
+        // World Test Operations
         Ping = 0x20,
         Pong = 0x21,
         SetState = 0x22,
+        GetHealth = 0x23,
 
         // General Error
         Error = 0xFF
@@ -26,11 +27,8 @@ public class Enums
 
     public enum WorldState : byte
     {
-        /// <summary>Server is offline/unreachable.</summary>
         Offline = 0,
-        /// <summary>Server is up but not accepting new sessions.</summary>
         Closed = 1,
-        /// <summary>Server is up and accepting new connections.</summary>
         Available = 2
     }
 }

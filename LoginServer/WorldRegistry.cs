@@ -72,8 +72,12 @@ public class WorldRegistry
     {
         _worlds.AddOrUpdate(
             info.Id,
-            // Key doesn't exist - add new entry
-            _ => (info, DateTime.UtcNow),
+            // Key doesn't exist - add new entry and log registration
+            id =>
+            {
+                Console.WriteLine($"[Registry] World {info.Id} '{info.Name}' registered with state {info.State}");
+                return (info, DateTime.UtcNow);
+            },
             // Key exists - update only if state changed or if it's a heartbeat refresh
             (_, existing) =>
             {

@@ -1,19 +1,39 @@
 ﻿using LoginServer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shared;
+using Shared.Persistence;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 
-var registry = new WorldRegistry();
+var host = Host.CreateDefaultBuilder(args)
+    .ConfigureServices((context, services) =>
+    {
+        services.AddDbContext<LoginDbContext>(options =>
+            options.UseSqlServer(
+                context.Configuration.GetConnectionString("LoginServer"),
+                sqlOptions => sqlOptions.MigrationsAssembly("SqlMigrationRunner")
+            ));
+
+        services.AddSingleton<LoginService>();
+        services.AddSingleton<WorldRegistry>();
+    })
+    .Build();
+
 using var cts = new CancellationTokenSource();
 Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
+
+var registry = host.Services.GetRequiredService<WorldRegistry>();
+var loginService = host.Services.GetRequiredService<LoginService>();
 
 // Listen for world heartbeats on UDP port 14004
 registry.StartHeartbeatListener(14004, cts.Token);
 
 // Start login service on TCP port 14002
-var loginService = new LoginService(IPAddress.Any, 14002, registry);
 Console.WriteLine("Login server starting...");
 await loginService.StartAsync(cts.Token);
 
