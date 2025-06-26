@@ -48,10 +48,19 @@
                 @realm.State
             </div>
 
-            <div class="col-6">
+            <div class="col-6 text-end">
                 <div class="progress" role="progressbar">
                     <div class="progress-bar progress-bar-striped" style="width: @(realm.RealmUsage)%">@realm.CurrentUsers / @realm.MaxUsers</div>
                 </div>
+
+                <div class="mt-4">
+
+                    <a asp-page="/Realms/Stats" asp-route-id="@realm.Id" class="text-warning text-decoration-none me-2">
+                        <i class="fa-solid fa-chart-line"></i> Realm Stats
+                    </a>
+
+                </div>
+
             </div>
 
         </div>
