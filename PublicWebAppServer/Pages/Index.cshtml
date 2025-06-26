@@ -21,25 +21,39 @@
 
 @foreach (var realm in Model.Realms)
 {
-    <div>
-        <h2>@realm.Name</h2>
+    <div class="p-2 border rounded bg-body-tertiary">
+        <div class="row">
 
-        @if (realm.State == Enums.WorldState.Closed)
-        {
-            <i class="fas fa-ban text-danger"></i>
-        }
+            <div class="col-6">
+                <h2>
+                    <i class="fa-solid fa-layer-group"></i>
+                    @realm.Name
+                </h2>
 
-        @if (realm.State == Enums.WorldState.Available)
-        {
-            <i class="fas fa-check-circle text-success"></i>
-        }
+                @if (realm.State == Enums.WorldState.Closed)
+                {
+                    <i class="fas fa-ban text-danger"></i>
+                }
 
-        @if (realm.State == Enums.WorldState.Offline)
-        {
-            <i class="fas fa-power-off text-secondary"></i>
-        }
+                @if (realm.State == Enums.WorldState.Available)
+                {
+                    <i class="fas fa-check-circle text-success"></i>
+                }
 
-        @realm.State
+                @if (realm.State == Enums.WorldState.Offline)
+                {
+                    <i class="fas fa-power-off text-secondary"></i>
+                }
 
+                @realm.State
+            </div>
+
+            <div class="col-6">
+                <div class="progress" role="progressbar">
+                    <div class="progress-bar progress-bar-striped" style="width: @(realm.RealmUsage)%">@realm.CurrentUsers / @realm.MaxUsers</div>
+                </div>
+            </div>
+
+        </div>
     </div>
 }

@@ -15,8 +15,10 @@ public class WorldInfo
     public int Port { get; init; }
     public WorldState State { get; set; }
 
-    public int MaxUsers { get; init; } = 10;
-    public int CurrentUsers { get; set; } = 0;
+    public int MaxUsers { get; init; } = 100;
+    public int CurrentUsers { get; set; } = 15;
 
     public int Capacity => MaxUsers - CurrentUsers;
+
+    public double RealmUsage => ((double)CurrentUsers / MaxUsers) * 100;
 }
