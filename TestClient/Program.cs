@@ -150,7 +150,7 @@ class Program
                                 var worldChoice = AnsiConsole.Prompt(
                                     new SelectionPrompt<string>()
                                         .Title("[green]World Menu[/]")
-                                        .AddChoices("Ping", "Set State", "Disconnect")
+                                        .AddChoices("Ping", "Set State", "Shutdown", "Disconnect")
                                 );
 
                                 switch (worldChoice)
@@ -177,6 +177,14 @@ class Program
                                         break;
 
                                     case "Disconnect":
+                                        await ClientService.DisconnectWorldAsync(worldClient, cts.Token);
+                                        AnsiConsole.MarkupLine("[yellow]Disconnected from world.[/]");
+                                        inWorld = false;
+                                        loggedIn = false;
+                                        break;
+
+                                    case "Shutdown":
+                                        await ClientService.ShutdownWorldAsync(worldClient, cts.Token);
                                         await ClientService.DisconnectWorldAsync(worldClient, cts.Token);
                                         AnsiConsole.MarkupLine("[yellow]Disconnected from world.[/]");
                                         inWorld = false;

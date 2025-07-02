@@ -103,4 +103,11 @@ public static class ClientService
         var setStatePkt = new Packet(Opcode.SetState, [(byte)newState]);
         await stream.WriteAsync(setStatePkt.ToBytes(), ct);
     }
+
+    public static async Task ShutdownWorldAsync(TcpClient tcpClient, CancellationToken ct)
+    {
+        var stream = tcpClient.GetStream();
+        var shutdownPkt = new Packet(Opcode.WorldShutdown);
+        await stream.WriteAsync(shutdownPkt.ToBytes(), ct);
+    }
 }

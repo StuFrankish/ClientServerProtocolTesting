@@ -20,6 +20,7 @@ public class Enums
         Pong = 0x21,
         SetState = 0x22,
         GetHealth = 0x23,
+        WorldShutdown = 0x24,
 
         // General Error
         Error = 0xFF

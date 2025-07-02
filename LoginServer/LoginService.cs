@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Shared;
 using Shared.Persistence;
 using System.Net;
@@ -100,5 +101,20 @@ public class LoginService(WorldRegistry registry, LoginDbContext dbContext)
             Console.WriteLine($"[Login] Disconnected {sess.Id}");
             sess.Client.Close();
         }
+    }
+}
+
+public class LoginHostedService : BackgroundService
+{
+    private readonly LoginService _loginService;
+
+    public LoginHostedService(LoginService loginService)
+    {
+        _loginService = loginService;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await _loginService.StartAsync(stoppingToken);
     }
 }

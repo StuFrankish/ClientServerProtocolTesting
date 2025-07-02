@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Shared;
 using Shared.Caching;
 using System.Collections.Concurrent;
@@ -110,5 +111,21 @@ public class WorldRegistry(IConfiguration configuration)
     {
         Console.WriteLine($"[Registry] Current worlds: {_worlds.Count} registered");
         return [.. _worlds.Values.Select(e => e.Info)];
+    }
+}
+
+public class WorldRegistryHostedService : BackgroundService
+{
+    private readonly WorldRegistry _worldRegistry;
+
+    public WorldRegistryHostedService(WorldRegistry worldRegistry)
+    {
+        _worldRegistry = worldRegistry;
+    }
+
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _worldRegistry.StartHeartbeatListener(14004, stoppingToken);
+        return Task.CompletedTask;
     }
 }
