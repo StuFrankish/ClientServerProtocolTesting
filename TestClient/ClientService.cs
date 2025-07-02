@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using static Shared.Enums;
 
 namespace CliClient;
@@ -61,13 +62,13 @@ public static class ClientService
         return [.. worlds];
     }
 
-    public static async Task<TcpClient> ConnectWorldAsync(WorldInfo world, CancellationToken ct)
+    public static async Task<TcpClient> ConnectWorldAsync(WorldInfo world, string username, CancellationToken ct)
     {
         var tcp = new TcpClient();
         await tcp.ConnectAsync(world.IP.ToString(), world.Port, ct);
         var stream = tcp.GetStream();
 
-        var hs = new Packet(Opcode.WorldHandshake);
+        var hs = new Packet(Opcode.WorldHandshake, Encoding.UTF8.GetBytes(username));
         await stream.WriteAsync(hs.ToBytes(), ct);
 
         var resp = await Packet.FromStream(stream, ct);
@@ -109,5 +110,28 @@ public static class ClientService
         var stream = tcpClient.GetStream();
         var shutdownPkt = new Packet(Opcode.WorldShutdown);
         await stream.WriteAsync(shutdownPkt.ToBytes(), ct);
+    }
+
+    public static async Task<List<PlayerInfo>> QueryConnectedPlayersAsync(TcpClient tcpClient, CancellationToken ct)
+    {
+        var stream = tcpClient.GetStream();
+        var queryPkt = new Packet(Opcode.QueryConnectedPlayers);
+        await stream.WriteAsync(queryPkt.ToBytes(), ct);
+
+        var resp = await Packet.FromStream(stream, ct);
+        if (resp.Op == Opcode.QueryConnectedPlayersResponse)
+        {
+            // Setup JSON deserialization options to ignore case differences
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                WriteIndented = true
+            };
+
+            var playersJson = Encoding.UTF8.GetString(resp.Payload);
+            return JsonSerializer.Deserialize<List<PlayerInfo>>(playersJson, options) ?? [];
+        }
+
+        return [];
     }
 }

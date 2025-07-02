@@ -14,6 +14,7 @@ public class Enums
         WorldHandshake = 0x10,
         WorldWelcome = 0x11,
         Disconnect = 0x12,
+        UpdatePlayerPosition = 0x13,
 
         // World Test Operations
         Ping = 0x20,
@@ -21,7 +22,9 @@ public class Enums
         SetState = 0x22,
         GetHealth = 0x23,
         WorldShutdown = 0x24,
-
+        QueryConnectedPlayers = 0x26,
+        QueryConnectedPlayersResponse = 0x27,
+        
         // General Error
         Error = 0xFF
     }

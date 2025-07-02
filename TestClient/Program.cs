@@ -141,7 +141,7 @@ class Program
                         TcpClient worldClient = null;
                         try
                         {
-                            worldClient = await ClientService.ConnectWorldAsync(selectedRealm, cts.Token);
+                            worldClient = await ClientService.ConnectWorldAsync(selectedRealm, user, cts.Token);
 
                             // === World-Menu Loop ===
                             bool inWorld = true;
@@ -150,7 +150,7 @@ class Program
                                 var worldChoice = AnsiConsole.Prompt(
                                     new SelectionPrompt<string>()
                                         .Title("[green]World Menu[/]")
-                                        .AddChoices("Ping", "Set State", "Shutdown", "Disconnect")
+                                        .AddChoices("Ping", "List Players", "Set State", "Shutdown", "Disconnect")
                                 );
 
                                 switch (worldChoice)
@@ -189,6 +189,15 @@ class Program
                                         AnsiConsole.MarkupLine("[yellow]Disconnected from world.[/]");
                                         inWorld = false;
                                         loggedIn = false;
+                                        break;
+
+                                    case "List Players":
+                                        var players = await ClientService.QueryConnectedPlayersAsync(worldClient, cts.Token);
+                                        AnsiConsole.MarkupLine("[green]Connected Players:[/]");
+                                        foreach (var player in players)
+                                        {
+                                            AnsiConsole.MarkupLine($"[yellow]Session ID:[/] {player.SessionId}, [yellow]User ID:[/] {player.UserId}, [yellow]Position:[/] ({player.Position.X}, {player.Position.Y}, {player.Position.Z})");
+                                        }
                                         break;
                                 }
                             }

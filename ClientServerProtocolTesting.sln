@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAppServer", "PublicWebAp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlMigrationRunner", "SqlMigration\SqlMigrationRunner.csproj", "{DBD17AD7-0B0E-2F5A-FA3B-06B9D8EE0553}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorldServerHost", "WorldServerHost\WorldServerHost.csproj", "{39BB6EB2-BB9B-415E-87CE-1DF821923B96}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{DBD17AD7-0B0E-2F5A-FA3B-06B9D8EE0553}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBD17AD7-0B0E-2F5A-FA3B-06B9D8EE0553}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBD17AD7-0B0E-2F5A-FA3B-06B9D8EE0553}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39BB6EB2-BB9B-415E-87CE-1DF821923B96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39BB6EB2-BB9B-415E-87CE-1DF821923B96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39BB6EB2-BB9B-415E-87CE-1DF821923B96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39BB6EB2-BB9B-415E-87CE-1DF821923B96}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -75,6 +81,7 @@ Global
 		{F5BBCCC3-5DEC-4FE1-9E3C-5CCBD1FE4A93} = {67930BD1-04C9-406D-99AE-9985F5350259}
 		{D46448F4-6CE1-5A41-9607-632C1425DC6B} = {67930BD1-04C9-406D-99AE-9985F5350259}
 		{DBD17AD7-0B0E-2F5A-FA3B-06B9D8EE0553} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{39BB6EB2-BB9B-415E-87CE-1DF821923B96} = {67930BD1-04C9-406D-99AE-9985F5350259}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {61FC7418-53B7-4B7A-BB2C-A8121E63C569}

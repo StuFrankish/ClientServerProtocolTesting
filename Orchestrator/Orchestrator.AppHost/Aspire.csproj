@@ -22,6 +22,7 @@
     <ProjectReference Include="..\..\PublicWebAppServer\WebAppServer.csproj" />
     <ProjectReference Include="..\..\SqlMigration\SqlMigrationRunner.csproj" />
     <ProjectReference Include="..\..\TestClient\CLI.csproj" />
+    <ProjectReference Include="..\..\WorldServerHost\WorldServerHost.csproj" />
     <ProjectReference Include="..\..\WorldServer\WorldServer.csproj" />
   </ItemGroup>
 

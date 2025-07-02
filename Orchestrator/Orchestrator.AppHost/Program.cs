@@ -44,4 +44,7 @@ builder.AddProject<Projects.WebAppServer>("PublicWebAppServer")
     .WithReference(loginServerDatabase)
     .WithReference(worldServerDatabase);
 
+builder.AddProject<Projects.WorldServerHost>("worldserverhost")
+    .WithExplicitStart();
+
 builder.Build().Run();
